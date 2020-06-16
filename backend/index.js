@@ -11,6 +11,11 @@ mydb.on('error',err=>console.log(err));
 mydb.once('open',()=>console.log("Db Connected"));
 
 
+const songs =require('./Routes/Songs');
+app.use('/songs',songs);
+
+
+
 app.get('/',(req,res)=>{
     res.send("hellow world");
 });

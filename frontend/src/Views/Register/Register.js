@@ -6,12 +6,17 @@ class Register extends Component{
     constructor(props) {
         super(props);
         this.state={
-            fullName:'',
+            fullname:'',
             mail:'',
             telephone:'',
             pass1:'',
             pass2:''
         }
+    }
+    onChange=e=>{
+        this.setState({
+            [e.target.name]:e.target.value
+        })
     }
 
     render() {
@@ -40,7 +45,8 @@ class Register extends Component{
                                             required
                                             name="fullname"
                                             id="fullname"
-                                            value={this.state.fullName}
+                                            value={this.state.fullname}
+                                            onChange={this.onChange}
                                         />
 
                                         <Form.Control.Feedback type="invalid">
@@ -61,6 +67,7 @@ class Register extends Component{
                                             name="mail"
                                             id="mail"
                                             value={this.state.mail}
+                                            onChange={this.onChange}
                                         />
 
                                         <Form.Control.Feedback type="invalid">
@@ -80,6 +87,7 @@ class Register extends Component{
                                             name="telephone"
                                             id="telephone"
                                             value={this.state.telephone}
+                                            onChange={this.onChange}
                                         />
 
                                         <Form.Control.Feedback type="invalid">
@@ -99,6 +107,7 @@ class Register extends Component{
                                             name="pass1"
                                             id="pass1"
                                             value={this.state.pass1}
+                                            onChange={this.onChange}
                                         />
 
                                         <Form.Control.Feedback type="invalid">
@@ -118,6 +127,7 @@ class Register extends Component{
                                             name="pass2"
                                             id="pass2"
                                             value={this.state.pass2}
+                                            onChange={this.onChange}
                                         />
 
                                         <Form.Control.Feedback type="invalid">

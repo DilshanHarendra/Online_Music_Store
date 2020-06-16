@@ -1,0 +1,11 @@
+.music-player-controller{
+    border: 1px solid #ff1058 !important;
+    border-radius: 50%;
+    background-color: cornsilk !important;
+}
+.music-player-panel{
+    border-top: 1px solid rgba(1,1,1,0.3);
+}
+.progress-bar{
+    background-color: transparent !important;
+}

@@ -1,0 +1,42 @@
+.card{
+    margin-bottom: 10px;
+}
+.songName{
+    width: 95%;
+    margin: 1px;
+}
+.closeDiv{
+    margin-left: 1%;
+    margin-top: 10px;
+    color:gray;
+}
+.close:hover{
+    color: red !important;
+    cursor: pointer;
+}
+.submit{
+    margin-left: auto;
+    margin-right: auto;
+}
+.box1{
+    width: 95% ;
+    padding-right: 50px;
+    height: 100%;
+    margin-right: 25px;
+    padding-bottom: 30px;
+    padding-left: 25px;
+    border-right: 1px solid rgba(0,0,0,0.3);
+}
+.dropArea{
+    background-color: rgba(192,193,205,0.28);
+    width: 100%;
+    padding: 30px;
+    border: 1px dashed gray;
+    border-radius: 10px;
+}
+@media only screen and (max-width: 900px) {
+    .box1{
+        padding-bottom: 20px;
+        border-right:none;
+    }
+}

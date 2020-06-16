@@ -11,6 +11,12 @@ class Login extends Component{
         }
     }
 
+    onChange=e=>{
+        this.setState({
+            [e.target.name]:e.target.value
+        })
+    }
+
     render() {
 
         return <>
@@ -38,6 +44,7 @@ class Login extends Component{
                                             name="mail"
                                             id="mail"
                                             value={this.state.mail}
+                                            onChange={this.onChange}
                                         />
 
                                         <Form.Control.Feedback type="invalid">
@@ -56,6 +63,7 @@ class Login extends Component{
                                             name="pass1"
                                             id="pass1"
                                             value={this.state.pass1}
+                                            onChange={this.onChange}
                                         />
 
                                         <Form.Control.Feedback type="invalid">
