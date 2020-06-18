@@ -4,8 +4,10 @@ import axios from 'axios';
 
 
 import '../../Asserts/css/AddNewSongs.css';
-import UploadDopZone from "./UploadDopZone";
+
 import Dropzone from "react-dropzone";
+import ChangeName from "./ChangeName";
+var HashMap = require('hashmap');
 class AddNewSong extends Component{
 
     constructor(props) {
@@ -14,8 +16,7 @@ class AddNewSong extends Component{
             album:'',
             artist:'',
             category:'',
-            files:[],
-            fileCount:0,
+            files: new HashMap(),
             isValidate:false
         }
     }
@@ -26,11 +27,37 @@ class AddNewSong extends Component{
         })
     }
 
-    addFile=file=>{
+    deleteSong=key=>{
+        var map=this.state.files;
+        map.delete(key);
         this.setState({
-            files:[...file,...this.state.files],
-            fileCount:file.length
-        },()=>console.log(this.state.files))
+            files:map,
+        },()=>console.log(this.state.files.values()))
+    }
+
+    setName=(key,obj)=>{
+
+        var map=this.state.files;
+       map.set(key,obj)
+    }
+
+    addFile=file=>{
+        var map=this.state.files;
+        if (file.length!==0){
+
+            file.forEach(song=>{
+                if (song.type==="audio/mpeg"){
+                    map.set(song.name,{name:song.name,file:song})
+                }
+
+            });
+
+            this.setState({
+                files:map,
+            })
+
+        }
+
     }
     onSubmit=(e)=>{
         e.preventDefault();
@@ -42,9 +69,21 @@ class AddNewSong extends Component{
            this.setState({
                isValidate:false
            });
-           const songs = new FormData;
-           songs.append('songs',this.state.files)
-            axios.post(global.backend+'/songs/uploadsongs',songs)
+           const songs = new FormData();
+           let songsName=[];
+           this.state.files.forEach((v,k)=>{
+               songs.append('songs',v.file);
+               songsName=[v.name,...songsName];
+           });
+           let data={
+               album:this.state.album,
+               artist:this.state.artist,
+               category:this.state.category,
+               songs:songsName
+           }
+           const json = JSON.stringify(data);
+           songs.append('data',json);
+           axios.post(global.backend+'/songs/uploadsongs',songs,{headers:{ 'Content-Type': 'multipart/form-data'}})
                 .then(res=>console.log(res))
                 .catch(err=>console.log(err))
 
@@ -53,7 +92,9 @@ class AddNewSong extends Component{
     }
 
 
+
     render() {
+
         return <>
             <div className="container">
 
@@ -135,6 +176,7 @@ class AddNewSong extends Component{
                                             <Dropzone
                                                 onDrop={this.addFile}
                                                 className="dropArea"
+
                                             >
                                                 {({getRootProps, getInputProps}) => (
                                                     <div {...getRootProps()}>
@@ -142,7 +184,10 @@ class AddNewSong extends Component{
                                                         name="songs"
 
                                                         />
-                                                        <p className="dropArea" >"Drag 'n' drop some files here, or click to select files"</p>
+                                                        <p className="dropArea" >Drag 'n' drop some files here, or click to select files
+                                                            <br/>
+                                                            "allows only .mp3"
+                                                            </p>
                                                     </div>
                                                 )}
                                             </Dropzone>
@@ -151,8 +196,11 @@ class AddNewSong extends Component{
                                             ):(
                                                 <p></p>
                                             )}
+                                            {this.state.files.values().map(song=>(
+                                                <ChangeName data={song} key={song.name} allSongs={this.state.files} setName={this.setName}  deleteSong={this.deleteSong} />
+                                            ))}
 
-                                            <UploadDopZone data={this.state.files} />
+
 
                                     </div>
 

@@ -14,6 +14,9 @@ mydb.once('open',()=>console.log("Db Connected"));
 const songs =require('./Routes/Songs');
 app.use('/songs',songs);
 
+app.use(express.static('public'));
+app.use('/uploads',express.static('./Uploads'));
+
 
 
 app.get('/',(req,res)=>{

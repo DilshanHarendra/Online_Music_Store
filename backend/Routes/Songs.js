@@ -9,12 +9,17 @@ router.use(fileUpload());
 router.use(bodyParser());
 
 
+
 router.get('/',(req,res)=>{
     res.send("hello");
 });
 
-router.post('/uploadsongs',(req,res)=>{
-    console.log(req.files);
+router.post('/uploadsongs',async (req,res)=>{
+    console.log(JSON.parse(req.body.data),req.files);
+    var Songs =req.files;
+
+
+    //Songs.mv(`./Uploads/${pid}_$d`)
     res.send("hello");
 });
 
