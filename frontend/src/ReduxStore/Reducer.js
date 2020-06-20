@@ -1,20 +1,47 @@
+var HashMap = require('hashmap');
+
+var getLastSong=localStorage.getItem("lastSong");
+var pList= new HashMap();
+var storedData=JSON.parse(getLastSong);
+if (getLastSong!==null){
+    pList.set(storedData.name,storedData);
+}
+
 const intialState={
-    count:42,
-    username:localStorage.getItem("username"),
-    userType:localStorage.getItem("type"),
-    playlits:[]
+    songs:[],
+    playList:pList
 
 }
 
 
 
+
 function Reducer(state=intialState,action) {
 
+
     switch (action.type) {
-        case 'Increment': return {count:state.count+1 };
-        case 'ChangePlayList':return {playlits:action.playList}
-        default :return state;
+
+        case 'ADD_SONGS':{
+        var newList=[...action.newSongs, ...state.songs]
+           return {...state,songs :newList}
+        }
+        case 'ADD_TO_PLAYLIST':{
+            let song={
+                id:action.newSong._id,
+                name: action.newSong.songName,
+                singer: action.newSong.artistName,
+                cover: global.publicCoverImage+action.newSong.coverImage,
+                musicSrc:global.publicSongs+action.newSong.songName,
+            }
+            var newList=state.playList;
+            newList.set(action.newSong.songName,song);
+
+            return {...state,playList :newList}
+        }
+
+        default:return state
     }
+
 
 
 }export default Reducer;

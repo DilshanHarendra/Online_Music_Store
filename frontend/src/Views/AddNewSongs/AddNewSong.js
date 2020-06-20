@@ -1,13 +1,27 @@
 import React, {Component} from "react";
 import {Button, Card, Form} from "react-bootstrap";
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+import { FilePond,  registerPlugin } from 'react-filepond';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+import FilePondPluginImageValidateSize from 'filepond-plugin-image-validate-size';
 import axios from 'axios';
-
-
+import {KeyboardDatePicker, MuiPickersUtilsProvider,} from '@material-ui/pickers';
+import Checkbox from '@material-ui/core/Checkbox';
 import '../../Asserts/css/AddNewSongs.css';
-
+import DateFnsUtils from '@date-io/date-fns';
 import Dropzone from "react-dropzone";
 import ChangeName from "./ChangeName";
 var HashMap = require('hashmap');
+
+
+
+
+registerPlugin( FilePondPluginImagePreview,FilePondPluginFileValidateType,FilePondPluginImageValidateSize)
+
+
+
 class AddNewSong extends Component{
 
     constructor(props) {
@@ -16,12 +30,33 @@ class AddNewSong extends Component{
             album:'',
             artist:'',
             category:'',
+            description:'',
+            coverImage:[],
+            year:new Date(),
             files: new HashMap(),
-            isValidate:false
+            isValidate:false,
+            showReleseDate:false
+
         }
     }
 
+    changeReleseDate=e=>  {
+
+        if (this.state.showReleseDate){
+            this.setState({
+                showReleseDate:false
+            });
+        }else {
+            this.setState({
+                showReleseDate:true
+            });
+        }
+
+
+
+        }
     onChange=e=>{
+
         this.setState({
             [e.target.name]:e.target.value
         })
@@ -59,9 +94,34 @@ class AddNewSong extends Component{
         }
 
     }
+
+    showReleseDate=()=>{
+        if (this.state.showReleseDate){
+            return <>
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="MM/dd/yyyy"
+                        margin="normal"
+                        id="year"
+                        label="Release Year (Optional)"
+                        value={this.state.year}
+                        onChange={this.setDate}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                    />
+                </MuiPickersUtilsProvider>  <br/>
+            </>
+        }
+    }
+
+
+
     onSubmit=(e)=>{
         e.preventDefault();
-       if (this.state.album===''|| this.state.artist===''||this.state.category===''||this.state.files===''){
+       if (this.state.album===''|| this.state.artist===''||this.state.files===''||this.state.coverImage==="" ){
            this.setState({
                isValidate:true
            })
@@ -70,27 +130,45 @@ class AddNewSong extends Component{
                isValidate:false
            });
            const songs = new FormData();
-           let songsName=[];
+           songs.append('coverImage',this.state.coverImage[0]);
+           let SongsDetails=[];
+           var id=Date.now();
+           let album= {
+               coverImage:this.state.album+"_"+this.state.coverImage[0].name,
+           }
            this.state.files.forEach((v,k)=>{
                songs.append('songs',v.file);
-               songsName=[v.name,...songsName];
+               let song = {
+                   songName: v.name,
+                   albumDetails: id,
+                   addDate: new Date(),
+                   albumName: this.state.album,
+                   artistName: this.state.artist,
+                   albumCategory: this.state.category,
+                   year: this.state.year,
+                   otherDetails: this.state.description,
+                   coverImage:this.state.album+"_"+this.state.coverImage[0].name,
+
+               }
+               SongsDetails=[...SongsDetails,song]
            });
-           let data={
-               album:this.state.album,
-               artist:this.state.artist,
-               category:this.state.category,
-               songs:songsName
-           }
+
+           let data=[album,SongsDetails];
            const json = JSON.stringify(data);
            songs.append('data',json);
-           axios.post(global.backend+'/songs/uploadsongs',songs,{headers:{ 'Content-Type': 'multipart/form-data'}})
+           axios.post(global.backend+'/songs/addsongs',songs,{headers:{ 'Content-Type': 'multipart/form-data'}})
                 .then(res=>console.log(res))
                 .catch(err=>console.log(err))
-
 
        }
     }
 
+
+    setDate=date=>{
+        this.setState({
+            year:date
+        })
+    }
 
 
     render() {
@@ -100,7 +178,7 @@ class AddNewSong extends Component{
 
                     <Card border="primary" >
                         <Card.Header>
-                                <h1>Add New Songs</h1>
+                                <h4>Add New Songs</h4>
                             </Card.Header>
                             <Card.Body>
                                 <Form noValidate validated={this.state.isValidate} onSubmit={this.onSubmit}  >
@@ -126,7 +204,7 @@ class AddNewSong extends Component{
                                             <Form.Control.Feedback type="invalid">
                                                 Please Enter Album.
                                             </Form.Control.Feedback>
-                                        </div>
+                                        </div><br/>
 
 
 
@@ -147,29 +225,87 @@ class AddNewSong extends Component{
                                             <Form.Control.Feedback type="invalid">
                                                 Please Enter Artist.
                                             </Form.Control.Feedback>
-                                        </div>
+                                        </div><br/>
+
+
+                                                <h6 style={{color:'gray',textAlign:'left'}}>CoverImage <span className="text-danger">*</span></h6>
+                                                <FilePond
+                                                    required={true}
+                                                    ref={ref => this.pond = ref}
+                                                    files={this.state.coverImage}
+                                                    allowMultiple={false}
+                                                    maxFiles={1}
+                                                    id="coverimg"
+                                                    labelIdle='Drag & Drop your Product Images or <span class="filepond--label-action"> Browse </span>'
+                                                    acceptedFileTypes={['image/*']}
+                                                    labelFileTypeNotAllowed={"Invalid file"}
+                                                    imagePreviewMaxHeight={400}
+                                                    imageValidateSizeMinHeight={200}
+                                                    imageValidateSizeMinWidth={200}
+                                                    onupdatefiles={(fileItems) => {
+
+                                                        this.setState({
+                                                            coverImage: fileItems.map(fileItem => fileItem.file)
+
+                                                        });
+                                                    }}
+
+
+                                                >
+
+                                                </FilePond>
+                                                {this.state.isValidate&&this.state.coverImage.length===0?(
+                                                    <p className="text-danger">Enter CoverImage</p>
+                                                ):(
+                                                    <p></p>
+                                                )}
+                                            <br/>
 
 
 
                                         <div className="input-field">
-                                            <label htmlFor="category">Category <span className="text-danger">*</span></label>
+                                            <label htmlFor="category">Category (Optional)</label>
                                             <Form.Control
                                                 type="text"
                                                 className="validate"
                                                 aria-describedby="inputGroupPrepend"
-                                                required
                                                 name="category"
                                                 id="category"
                                                 value={this.state.category}
                                                 onChange={this.onChange}
                                             />
 
-                                            <Form.Control.Feedback type="invalid">
-                                                Please Enter Category.
-                                            </Form.Control.Feedback>
-                                        </div>
 
-                                        </div>
+                                        </div><br/>
+
+
+
+                                        <p style={{textAlign:'left',color:'gray'}}>Set Release Date (Optional)
+                                            <Checkbox
+                                                checked={this.state.showReleseDate}
+                                                onClick={this.changeReleseDate}
+
+                                                inputProps={{ 'aria-label': 'checkbox with default color' }}
+                                            /></p>
+                                            {this.showReleseDate()}
+
+                                            <div className="input-field">
+                                                <label htmlFor="description">Discription (Optional)</label>
+                                                <Form.Control
+                                                    type="text"
+                                                    className="validate"
+                                                    aria-describedby="inputGroupPrepend"
+                                                    name="description"
+                                                    id="description"
+                                                    value={this.state.description}
+                                                    onChange={this.onChange}
+                                                />
+
+
+                                            </div><br/>
+
+
+                                </div>
                                     </div>
                                         <div className="col-md-7">
 
@@ -191,7 +327,7 @@ class AddNewSong extends Component{
                                                     </div>
                                                 )}
                                             </Dropzone>
-                                            {this.state.isValidate&&this.state.files.length===0?(
+                                            {this.state.isValidate&&this.state.files.values().length===0?(
                                                 <p className="text-danger">Enter Songs</p>
                                             ):(
                                                 <p></p>

@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router =express.Router();
 const core =require('cors');
 const fs = require('fs');
@@ -8,20 +9,108 @@ router.use(core());
 router.use(fileUpload());
 router.use(bodyParser());
 
-
-
+const AlbumSchema = require('../Schemas/AlbumSchema');
+const Songschema = require('../Schemas/SongsSchema');
+const uniqid= require('uniqid');
 router.get('/',(req,res)=>{
     res.send("hello");
 });
 
-router.post('/uploadsongs',async (req,res)=>{
-    console.log(JSON.parse(req.body.data),req.files);
-    var Songs =req.files;
 
 
-    //Songs.mv(`./Uploads/${pid}_$d`)
-    res.send("hello");
+
+
+//-------------------------------------------------------------- add new song ----------------------------------------------------------------
+
+async function  uploadFilse(req,res,next){
+
+    // upload files meddleware
+    var mediaFiles=req.files;
+    var data=await JSON.parse(req.body.data);
+    var songs =data[1];
+
+    //upload cover images to temp folder
+    mediaFiles.coverImage.mv(`./Uploads/temp/coverImages/${data[0].coverImage}`, async err=>{
+        if (err){
+            console.log(err);
+            res.status(500).send(err);
+        }
+    });
+
+    // upload songs to temp folder
+    for(var i=0;i<mediaFiles.songs.length;i++){
+       mediaFiles.songs[i].mv(`./Uploads/temp/songs/${songs[i].songName}`,async err=>{
+            if (err){
+                console.log(err);
+               res.status(500).send(err);
+            }
+       });
+    }
+
+  next();
+}
+
+
+function moveToServer(coverImage,Songs){
+    //move files from temp to valid folder
+    try{
+        fs.rename(`./Uploads/temp/coverImages/${coverImage}`,`./Uploads/coverImages/${coverImage}`,err=>{
+            if (err) console.log(err);
+        });
+
+        for(var i=0;i<Songs.length;i++){
+            fs.rename(`./Uploads/temp/songs/${Songs[i].songName}`,`./Uploads/songs/${Songs[i].songName}`,async err=>{
+                if (err){
+                    console.log(err);
+                    res.status(500).send(err);
+                }
+            });
+        }
+    }catch (e) {
+        console.log(e)
+    }
+
+}
+
+router.post('/addsongs',uploadFilse,async (req,res)=>{
+
+    try {
+
+        var data=await JSON.parse(req.body.data);
+        var album=data[0];
+        var songs =data[1];
+
+        // save songs
+        await  Songschema.collection.insertMany(songs,(err,song)=>{
+            if (err){
+                console.log(err)
+                res.status(500).send("error"+err);
+            }else{
+                var coverName=album.coverImage;
+                moveToServer(coverName,songs);
+                res.status(200).send("success");
+            }
+        });
+
+
+    }catch (e) {
+        console.log(e)
+        res.status(500).send(e);
+    }
+
 });
+
+//---------------------------------get Methodes------------------------------------------------------
+
+router.get('/addsongs',async (req,res)=>{
+
+
+    var data= await Songschema.find({});
+    res.status(200).send(data);
+});
+
+
+
 
 module.exports= router;
 

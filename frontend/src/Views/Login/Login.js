@@ -62,6 +62,7 @@ class Login extends Component{
                                             required
                                             name="pass1"
                                             id="pass1"
+
                                             value={this.state.pass1}
                                             onChange={this.onChange}
                                         />

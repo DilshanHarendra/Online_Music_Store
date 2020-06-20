@@ -22,6 +22,7 @@ class Header extends Component {
                         <Link className="nav-link" to="/login">Login</Link>
                         <Link className="nav-link" to="/playlist">PlayList</Link>
                         <Link className="nav-link" to="/addnewSong">Add Songs</Link>
+                        <Link className="nav-link" to="/songs">Songs</Link>
                         <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>

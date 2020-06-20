@@ -4,24 +4,15 @@ import "react-jinke-music-player/assets/index.css";
 import '../Asserts/css/MusicPlayer.css';
 import {connect} from "react-redux";
 function MusicPlayer(props){
+    var volume=parseFloat(localStorage.getItem("Volume"))||0.1;
 
-    const audioList1 = [
-        {
-            name: 'inhala Punjabi Medley at Y Unplugged Studio   News.mp3',
-            singer: 'Sarith surith',
-            cover: '//cdn.lijinke.cn/nande.jpg',
-            musicSrc: 'http://localhost:3000/Music/Sinhala Punjabi Medley at Y Unplugged Studio   News.mp3',
+function saveLastSong(data) {
 
-        },
-        {
-            name: 'Despacito',
-            singer: 'Luis Fonsi',
-            cover: 'http://res.cloudinary.com/alick/image/upload/v1502689731/Despacito_uvolhp.jpg',
-            musicSrc:'http://res.cloudinary.com/alick/video/upload/v150268968/Luis_Fonsi_-_Despacito_ft._Daddy_Yankee_uyvqw.mp3',
+    localStorage.setItem("lastSong",JSON.stringify(data))
+
+}
 
 
-        },
-    ]
 
     return <>
         <div className="container" >
@@ -30,10 +21,12 @@ function MusicPlayer(props){
                     <hr/>
                     <ReactJkMusicPlayer
                         audioLists={props.playList}
-                        defaultVolume={0.1}
-                    theme={"light"}
+                        defaultVolume={volume}
+                        theme={"light"}
                         autoPlay={false}
 
+                        onAudioVolumeChange={(v)=>{localStorage.setItem("Volume",v)}}
+                        onAudioPause={(data)=>saveLastSong(data)}
                     defaultPosition={{bottom:10,left:10}}
                     />
                 </div>
@@ -45,6 +38,6 @@ function MusicPlayer(props){
 
 }
 const mapStateToProps=state=>({
-    playList:state.playlits
+    playList:state.playList.values()
 });
 export default connect(mapStateToProps)(MusicPlayer);

@@ -5,7 +5,9 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 
-global.backend="http://localhost:4000"
+global.backend="http://localhost:4000";
+global.publicSongs="http://localhost:4000/Uploads/Songs/";
+global.publicCoverImage="http://localhost:4000/Uploads/coverImages/";
 ReactDOM.render(
   <React.StrictMode>
       <App />

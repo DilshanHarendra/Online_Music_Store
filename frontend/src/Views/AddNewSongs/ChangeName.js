@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Card, Form} from "react-bootstrap";
-var HashMap = require('hashmap');
+import { Form} from "react-bootstrap";
+
 
 function ChangeName(props) {
 
-   const [Song,setSong]=useState(props.data);
+   const Song=props.data;
    const [SongName,setSongName]=useState(props.data.name.split('.mp3')[0])
     const [error,seterror]=useState(false);
     const [empty,setempty]=useState(true);
@@ -54,7 +54,7 @@ function ChangeName(props) {
                             <Form noValidate validated={empty}   >
                             <Form.Control
                                 type="text"
-                                className=""
+                                className="songNameFiled"
                                 aria-describedby="inputGroupPrepend"
                                 required
                                 placeholder="Song Name"
@@ -73,7 +73,7 @@ function ChangeName(props) {
                         </div>
 
                         <div className="closeDiv" onClick={()=>deleteSong()}>
-                            <i className="close">X</i>
+                            <i className="fa fa-times close" aria-hidden="true"></i>
                         </div>
                     </div>
                     {error?(

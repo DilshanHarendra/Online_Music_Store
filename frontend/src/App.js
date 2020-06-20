@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from "./Components/Header";
-
+//import 'materialize-css/dist/css/materialize.min.css';
 import Home from "./Views/Home/Home";
 import {Route, Switch,BrowserRouter as Router} from "react-router-dom";
 import {createStore} from "redux";
@@ -14,6 +14,8 @@ import Login from "./Views/Login/Login";
 import Playlist from "./Views/PlayList/Playlist";
 import MusicPlayer from "./Components/MusicPlayer";
 import AddNewSong from "./Views/AddNewSongs/AddNewSong";
+import ShowSongs from "./Views/ShowSongs/ShowSongs";
+
 
 
 class App extends Component{
@@ -37,7 +39,9 @@ class App extends Component{
                             <Route path="/login" exact component={Login}/>
                             <Route path="/playlist" exact component={Playlist}/>
                             <Route path="/addnewSong" exact component={AddNewSong}/>
+                            <Route path="/songs" exact component={ShowSongs}/>
                         </Switch>
+                        <div style={{marginBottom:'60px'}}></div>
                         <MusicPlayer/>
                     </Provider>
                 </div>
