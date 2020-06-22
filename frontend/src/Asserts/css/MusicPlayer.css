@@ -9,3 +9,17 @@
 .progress-bar{
     background-color: transparent !important;
 }
+.img-content{
+    background-position: center;
+    height: 100%;
+    background-size: cover !important;
+}
+
+.music-player-controller{
+    background-position: center;
+    height: 100%;
+    background-size: cover !important;
+}
+.cover{
+    height: 100%;
+}

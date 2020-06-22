@@ -1,15 +1,19 @@
-var HashMap = require('hashmap');
+const hashMap = require("hashmap");
 
 var getLastSong=localStorage.getItem("lastSong");
-var pList= new HashMap();
-var storedData=JSON.parse(getLastSong);
+var storedData=[];
 if (getLastSong!==null){
-    pList.set(storedData.name,storedData);
+   storedData=[JSON.parse(getLastSong)];
 }
 
+
+
 const intialState={
-    songs:[],
-    playList:pList
+    songs:new hashMap(),
+    playList:storedData,
+    metaData:{SongsCount:-1},
+    playNow:false
+
 
 }
 
@@ -22,22 +26,39 @@ function Reducer(state=intialState,action) {
     switch (action.type) {
 
         case 'ADD_SONGS':{
-        var newList=[...action.newSongs, ...state.songs]
-           return {...state,songs :newList}
+        var newList=state.songs;
+        action.newSongs.forEach(song=>{
+           newList.set(song.songName,song)
+        });
+        return {...state,songs :newList}
         }
+
+
         case 'ADD_TO_PLAYLIST':{
             let song={
-                id:action.newSong._id,
+                key:action.newSong._id,
                 name: action.newSong.songName,
                 singer: action.newSong.artistName,
                 cover: global.publicCoverImage+action.newSong.coverImage,
                 musicSrc:global.publicSongs+action.newSong.songName,
             }
-            var newList=state.playList;
-            newList.set(action.newSong.songName,song);
-
-            return {...state,playList :newList}
+            return {...state,playList :[...state.playList,song],playNow:false}
         }
+        case 'FORCE_TO_PLAY':{
+            let song={
+                key:action.newSong._id,
+                name: action.newSong.songName,
+                singer: action.newSong.artistName,
+                cover: global.publicCoverImage+action.newSong.coverImage,
+                musicSrc:global.publicSongs+action.newSong.songName,
+            }
+            return {...state,playList :[song],playNow:true}
+        }
+
+        case 'UPDATE_METADATA':{
+            return {...state,metaData :action.metaData}
+        }
+
 
         default:return state
     }

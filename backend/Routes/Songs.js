@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+
 const router =express.Router();
 const core =require('cors');
 const fs = require('fs');
@@ -9,9 +9,9 @@ router.use(core());
 router.use(fileUpload());
 router.use(bodyParser());
 
-const AlbumSchema = require('../Schemas/AlbumSchema');
+
 const Songschema = require('../Schemas/SongsSchema');
-const uniqid= require('uniqid');
+
 router.get('/',(req,res)=>{
     res.send("hello");
 });
@@ -105,11 +105,22 @@ router.post('/addsongs',uploadFilse,async (req,res)=>{
 router.get('/addsongs',async (req,res)=>{
 
 
-    var data= await Songschema.find({});
+    var data= await Songschema.find({}).skip(parseInt(req.query.skip)).limit(parseInt(req.query.limit));
     res.status(200).send(data);
 });
 
+router.get('/metadata',async (req,res)=>{
 
+    try{
+        await Songschema.count({},function (err,count) {
+            if (err) res.sataus(500).send(err);
+            res.send({count});
+        })
+    }catch (e) {
+        console.log(e);
+    }
+
+});
 
 
 module.exports= router;

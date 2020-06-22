@@ -1,9 +1,14 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-
+import axios from 'axios';
 class Home extends Component{
 
 
+    componentDidMount() {
+
+
+
+    }
 
     render() {
         console.log(this.props.allSongs)
@@ -24,6 +29,10 @@ class Home extends Component{
 
     }
 }const mapStateToProps=state=>({
-    allSongs:state.songs,
+    allSongs:state.songs.values(),
+    metaData: state.metaData
 });
+
+
+
 export default connect(mapStateToProps)(Home);

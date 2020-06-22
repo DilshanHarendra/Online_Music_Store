@@ -5,7 +5,7 @@ require('dotenv').config();
 const  app = express();
 app.use(core());
 
-mongoose.connect(process.env.DB_URL,{useNewUrlParser:true});
+mongoose.connect(process.env.DB_URL,{useNewUrlParser:true,useUnifiedTopology:true});
 const mydb= mongoose.connection;
 mydb.on('error',err=>console.log(err));
 mydb.once('open',()=>console.log("Db Connected"));
@@ -19,8 +19,12 @@ app.use('/uploads',express.static('./Uploads'));
 
 
 
+
 app.get('/',(req,res)=>{
     res.send("hellow world");
 });
+
+
+
 
 app.listen(process.env.PORT||4000,console.log("server Run"));

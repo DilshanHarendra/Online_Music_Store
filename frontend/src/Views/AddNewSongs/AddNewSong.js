@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, Card, Form} from "react-bootstrap";
+import {Alert, Button, Card, Form} from "react-bootstrap";
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 import { FilePond,  registerPlugin } from 'react-filepond';
@@ -35,7 +35,8 @@ class AddNewSong extends Component{
             year:new Date(),
             files: new HashMap(),
             isValidate:false,
-            showReleseDate:false
+            showReleseDate:false,
+            error:''
 
         }
     }
@@ -157,8 +158,15 @@ class AddNewSong extends Component{
            const json = JSON.stringify(data);
            songs.append('data',json);
            axios.post(global.backend+'/songs/addsongs',songs,{headers:{ 'Content-Type': 'multipart/form-data'}})
-                .then(res=>console.log(res))
-                .catch(err=>console.log(err))
+                .then(res=>{
+                    window.location.replace("/songs");
+                })
+                .catch(err=>{
+                    this.setState({
+                        error:err
+                    })
+                    console.log(err)
+                })
 
        }
     }
@@ -179,8 +187,15 @@ class AddNewSong extends Component{
                     <Card border="primary" >
                         <Card.Header>
                                 <h4>Add New Songs</h4>
+
+
                             </Card.Header>
                             <Card.Body>
+                                {this.state.error!==""?(
+                                    <Alert variant={"danger"}>{this.state.error}</Alert>
+                                ):(
+                                    <></>
+                                )}
                                 <Form noValidate validated={this.state.isValidate} onSubmit={this.onSubmit}  >
                                     <div className="row" >
                                     <div className="col-md-5 text-center " >
@@ -266,14 +281,25 @@ class AddNewSong extends Component{
                                         <div className="input-field">
                                             <label htmlFor="category">Category (Optional)</label>
                                             <Form.Control
-                                                type="text"
+                                                as="Select"
                                                 className="validate"
                                                 aria-describedby="inputGroupPrepend"
                                                 name="category"
                                                 id="category"
                                                 value={this.state.category}
                                                 onChange={this.onChange}
-                                            />
+
+                                            >
+                                                <option value=""></option>
+                                                <option value="Live Show">Live Show</option>
+                                                <option value="Rock">Rock</option>
+                                                <option value="Pop">Pop</option>
+                                                <option value="Hiphop">Hiphop</option>
+                                                <option value="Classic">Classic</option>
+                                                <option value="Raggay">Raggay</option>
+                                                <option value="Electro">Electro</option>
+                                                
+                                            </Form.Control>
 
 
                                         </div><br/>
